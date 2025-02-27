@@ -1,0 +1,17 @@
+# Ignorar a pasta da venv
+venv/
+
+# Ignorar arquivos do VSCode
+.vscode/
+
+# Ignorar arquivos do PyCache
+__pycache__/
+*.pyc
+*.pyo
+
+# Ignorar arquivos de log e banco de dados
+*.log
+*.sqlite3
+
+# Ignorar arquivos de dependências do sistema
+.DS_Store
