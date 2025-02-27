@@ -1,5 +1,5 @@
 # Ignorar a pasta da venv
-venv/
+/venv/
 
 # Ignorar arquivos do VSCode
 .vscode/

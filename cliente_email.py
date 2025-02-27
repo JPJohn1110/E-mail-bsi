@@ -70,10 +70,10 @@ def acessar_email(ip, porta):
         
         if resposta:
             print(f'{'-='*20}\nSEJA BEM-VINDO << {resposta} >>\n{'-='*20}')
-            return True
+            return username
         else:
             print("USUÃRIO OU SENHA INCORRETA")
-            return False
+            return resposta
 
 
     except Exception as e:
@@ -108,22 +108,68 @@ def enviar_email(ip, porta, username):
         print("Erro ao conectar ao servidor:", e)
 
 
+def receber_emails(ip, porta, username):
+   
+    dados = {"acao": "receber_emails", "username": username}
 
-def tela_email(ip, porta):
-    print(f'''
+    try:
+        cliente_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        cliente_socket.connect((ip, porta))
+
+        cliente_socket.sendall(pickle.dumps(dados))
+
+        resposta = pickle.loads(cliente_socket.recv(4096))
+
+        if not resposta:
+            print(f"{"-="*20}\nNENHUM EMAIL ENCONTRADO.\n{"-="*20}\n")
+            return
+
+        print(f"{"-="*20}\nEMAILS RECEBIDOS:\n{"-="*20}\n")
+        for i, email in enumerate(resposta, start=1):
+            print(f"\n[{i}] {email['remetente']} : {email['assunto']}")
+        
+        escolha = int(input("\nDigite o número do e-mail para ler (ou ENTER para sair): "))
+        if escolha:
+            escolha = escolha - 1
+            if 0 <= escolha < len(resposta):
+                email = resposta[escolha]
+                print("\n" + "-" * 50)
+                print(f"De: {email['remetente']}")
+                print(f"Para: {email['destinatario']}")
+                print(f"Data: {email['data_hora']}")
+                print(f"Assunto: {email['assunto']}")
+                print(f"\n{email['corpo']}")
+                print("-" * 50)
+        
+    except Exception as e:
+        print("Erro ao conectar ao servidor:", e)
+    finally:
+        cliente_socket.close()
+
+
+
+
+
+def tela_email(ip, porta, username):
+    
+    while True:
+
+        print(f'''
     {"-=" * 20}
     SEJA BEM-VINDO AO SEU E-MAIL
     [4] Enviar E-mail
     [5] Receber E-mails
     [6] Logout
-    {"-=" * 20}
-                ''')
-    a = input("ESCOLHA UMA DAS OPÇÕES: ")
-    if a == "6": 
-        print(f" {"-=" * 20}\nLOGOUT REALIZADO COM SUCESSO \n{"-=" * 20}")
-        return    
-    elif a==4:
-        enviar_email(ip, porta)
+        {"-=" * 20}
+                    ''')
+        a = int(input("ESCOLHA UMA DAS OPÇÕES///: "))
+        if a == 6: 
+            print(f"{"-=" * 20}\nLOGOUT REALIZADO COM SUCESSO\n{"-=" * 20}")
+            return    
+        elif a==4:
+            enviar_email(ip, porta, username)
+        elif a == 5:
+            receber_emails(ip, porta, username)
 
     
 def main():
@@ -172,7 +218,7 @@ def main():
         elif a == 3:
             autentic = acessar_email(servidor_ip, servidor_porta)
             if autentic:
-                tela_email(servidor_ip, servidor_porta)
+                tela_email(servidor_ip, servidor_porta, autentic)
         
                
 
