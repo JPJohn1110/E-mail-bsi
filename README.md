@@ -1,6 +1,13 @@
-# E-mail-bsi
+# Email_BSI
 
-para conectar o servidor:
+## PARA CONECTAR LOCALMENTE:
 
 IP = 0.0.0.0
+
+PORTA = 8080
+
+## PARA CONECTAR NA AWS (CASO LIGADA):
+
+IP = cavalofaro.ddns.net
+
 PORTA = 8080
