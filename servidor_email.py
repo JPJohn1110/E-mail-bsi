@@ -123,7 +123,7 @@ def servidor():
             print(f"Nova conexão de {endereco}")
             executor.submit(funcao_cliente, cliente_socket, endereco)
             monitorar_threads()
-            print(emails)
+            #print(emails)
 
 
 
