@@ -104,7 +104,7 @@ def funcao_cliente(cliente_socket, endereco):
 
     mostrar_usuarios()
     
-    print(emails)
+    #print(emails)
 
     
 
