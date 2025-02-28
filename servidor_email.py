@@ -114,10 +114,10 @@ def servidor():
 
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server_socket.bind((ip, porta))
-    server_socket.listen(15)
+    server_socket.listen(30)
     print(f"Servidor rodando em {ip}:{porta}")
 
-    with concurrent.futures.ThreadPoolExecutor(max_workers=15) as executor:
+    with concurrent.futures.ThreadPoolExecutor(max_workers=30) as executor:
         while True:
             cliente_socket, endereco = server_socket.accept()
             print(f"Nova conexão de {endereco}")
