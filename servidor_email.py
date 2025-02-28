@@ -20,16 +20,17 @@ def mostrar_usuarios():
     else:
         print("Nenhum usuário cadastrado ainda.")
     print("===============================\n")
+    
 
 
 
-def handle_cliente(cliente_socket, endereco):
+def funcao_cliente(cliente_socket, endereco):
     global emails
     try:
         
         dados = pickle.loads(cliente_socket.recv(4096))  
         
-        
+#-=-=-=-=-==-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-        
         if dados["acao"] == "cadastrar":
             username = dados["username"]
             
@@ -38,9 +39,10 @@ def handle_cliente(cliente_socket, endereco):
             else:
                 usuarios[username] = {"nome": dados["nome"], "senha": dados["senha"]}
                 resposta = f"{"-=" * 20}\n CONTA CADASTRADA COM SUCESSO!\n{"-=" * 20}"
+                print(f"Novo usuário cadastrado: {username}")
             cliente_socket.sendall(pickle.dumps(resposta))
      
-            
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-==-=-==-=-=-=-=-=-=-            
         elif dados["acao"] == "login":
             username = dados["username"]
             senha = dados["senha"]            
@@ -49,11 +51,14 @@ def handle_cliente(cliente_socket, endereco):
                 senha_hash = usuarios[username]["senha"].encode('utf-8')
                 if bcrypt.checkpw(senha, senha_hash):
                     resposta = usuarios[username]["nome"]
+                    print(f"Usuário logado: {username}")
             
                 else:
                     resposta = False
 
             cliente_socket.sendall(pickle.dumps(resposta))
+            
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-==-=-==-=-=-=-=-=-=-
             
         elif dados["acao"] == "enviar_email":
             remetente = dados["remetente"]
@@ -67,6 +72,8 @@ def handle_cliente(cliente_socket, endereco):
                 else:
                     emails.append(dados) 
                     retorno = "E-MAIL ENVIADO COM SUCESSO."
+                    print(f"{remetente} enviou um e-mail para {destinatario}") 
+
                     
 
                 cliente_socket.sendall(pickle.dumps(retorno))
@@ -81,14 +88,13 @@ def handle_cliente(cliente_socket, endereco):
                 if email["destinatario"] == username:
                     emails_usuario.append(email)            
             
+            print(f"{username} recebeu {len(emails_usuario)} e-mails")  
             resposta = emails_usuario 
             cliente_socket.sendall(pickle.dumps(resposta)) 
         
             ##EXCLUSÃO DOS EMAIS//   
             emails = [email for email in emails if email["destinatario"] != username]
 
-
-                
 
     except Exception as e:
         print(f"Erro ao processar cliente {endereco}: {e}")
@@ -97,13 +103,10 @@ def handle_cliente(cliente_socket, endereco):
         cliente_socket.close() 
 
     mostrar_usuarios()
+    
     print(emails)
 
     
-
-
-
-
 
 def servidor():
     ip = "0.0.0.0"  
@@ -118,7 +121,7 @@ def servidor():
         while True:
             cliente_socket, endereco = server_socket.accept()
             print(f"Nova conexão de {endereco}")
-            executor.submit(handle_cliente, cliente_socket, endereco)
+            executor.submit(funcao_cliente, cliente_socket, endereco)
             monitorar_threads()
             print(emails)
 

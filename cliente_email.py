@@ -123,26 +123,30 @@ def receber_emails(ip, porta, username):
         if not resposta:
             print(f"{"-="*20}\nNENHUM EMAIL ENCONTRADO.\n{"-="*20}\n")
             return
+        while resposta:
+            print(f"{"-="*20}\nEMAILS RECEBIDOS:\n{"-="*20}\n")
+            for i, email in enumerate(resposta, start=1):
+                print(f"\n[{i}] {email['remetente']} : {email['assunto']}")
+            
+            escolha = int(input("\nDigite o número do e-mail para ler (ou ENTER para sair): "))
+            if escolha:
+                escolha = escolha - 1
+                if 0 <= escolha < len(resposta):
+                    email = resposta[escolha]
+                    print("\n" + "-" * 50)
+                    print(f"De: {email['remetente']}")
+                    print(f"Para: {email['destinatario']}")
+                    print(f"Data: {email['data_hora']}")
+                    print(f"Assunto: {email['assunto']}")
+                    print(f"\n{email['corpo']}")
+                    print("-" * 50)
+            elif escolha == '':
+                print(f"{"-="*20}\nSAINDO....\n{"-="*20}\n")
+                break
 
-        print(f"{"-="*20}\nEMAILS RECEBIDOS:\n{"-="*20}\n")
-        for i, email in enumerate(resposta, start=1):
-            print(f"\n[{i}] {email['remetente']} : {email['assunto']}")
-        
-        escolha = int(input("\nDigite o número do e-mail para ler (ou ENTER para sair): "))
-        if escolha:
-            escolha = escolha - 1
-            if 0 <= escolha < len(resposta):
-                email = resposta[escolha]
-                print("\n" + "-" * 50)
-                print(f"De: {email['remetente']}")
-                print(f"Para: {email['destinatario']}")
-                print(f"Data: {email['data_hora']}")
-                print(f"Assunto: {email['assunto']}")
-                print(f"\n{email['corpo']}")
-                print("-" * 50)
-        
+            
     except Exception as e:
-        print("Erro ao conectar ao servidor:", e)
+        print("SAINDOOOO ...")
     finally:
         cliente_socket.close()
 
@@ -156,13 +160,14 @@ def tela_email(ip, porta, username):
 
         print(f'''
     {"-=" * 20}
-    SEJA BEM-VINDO AO SEU E-MAIL
+    SEJA BEM-VINDO AO SEU E-MAIL <{username}>
     [4] Enviar E-mail
     [5] Receber E-mails
     [6] Logout
-        {"-=" * 20}
+    {"-=" * 20}
                     ''')
-        a = int(input("ESCOLHA UMA DAS OPÇÕES///: "))
+        a = int(input("ESCOLHA UMA DAS OPÇÕES: "))
+            
         if a == 6: 
             print(f"{"-=" * 20}\nLOGOUT REALIZADO COM SUCESSO\n{"-=" * 20}")
             return    
@@ -173,53 +178,60 @@ def tela_email(ip, porta, username):
 
     
 def main():
+    
+    
     servidor_ip = ''
     servidor_porta = 0
    
-    while True:
-        print(
-        f'''
+    try:
+        while True:
+            print(
+            f'''
+            {"-=" * 20}
+            CLIENTE E-MAIL SERVCE BSI ONLINE
+            [1] Apontar Servidor
+            {"-=" * 20}
+                        ''')
+            
+            a = int(input('DIGITE A OPÇÃO [1]: '))
+            if a == 1:
+                servidor_ip, servidor_porta = configurar_servidor()
+                break
+            
+            
+        
+        
+        while True:    
+            print(
+                f'''
         {"-=" * 20}
         CLIENTE E-MAIL SERVCE BSI ONLINE
-        [1] Apontar Servidor
+        [1] Apontar Outro Servidor
+        [2] Cadastrar Conta
+        [3] Acessar Email
         {"-=" * 20}
-                    ''')
         
-        a = int(input('DIGITE A OPÇÃO [1]: '))
+                '''
+            )
             
-        if a == 1:
-            servidor_ip, servidor_porta = configurar_servidor()
-            break
+            
+            a = int(input("ESCOLHA UMA DAS OPÇÕES: "))
         
-        
-    
-    
-    while True:    
-        print(
-            f'''
-    {"-=" * 20}
-    CLIENTE E-MAIL SERVCE BSI ONLINE
-    [1] Apontar Outro Servidor
-    [2] Cadastrar Conta
-    [3] Acessar Email
-    {"-=" * 20}
-    
-            '''
-        )
-        
-        a = int(input("ESCOLHA UMA DAS OPÇÕES: "))
-        if a == 1:
-            servidor_ip, servidor_porta = configurar_servidor()
-            if servidor_ip == None:
-                break
-        elif a == 2:
-            cadastrar_conta(servidor_ip,servidor_porta)
+            if a == 1:
+                servidor_ip, servidor_porta = configurar_servidor()
+                if servidor_ip == None:
+                    break
+            elif a == 2:
+                cadastrar_conta(servidor_ip,servidor_porta)
 
-        elif a == 3:
-            autentic = acessar_email(servidor_ip, servidor_porta)
-            if autentic:
-                tela_email(servidor_ip, servidor_porta, autentic)
-        
-               
+            elif a == 3:
+                autentic = acessar_email(servidor_ip, servidor_porta)
+                if autentic:
+                    tela_email(servidor_ip, servidor_porta, autentic)
+            
+    except Exception as e:
+        print("SAINDOOOO ...")
+
+                
 
 main()
